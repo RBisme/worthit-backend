@@ -13,6 +13,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.status(200).send("Worth-It backend is live");
 });
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
 /* =========================
    VALUATION ENDPOINT
 ========================= */
