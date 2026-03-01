@@ -10,7 +10,9 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-
+app.get("/", (req, res) => {
+  res.status(200).send("Worth-It backend is live");
+});
 /* =========================
    VALUATION ENDPOINT
 ========================= */
