@@ -92,7 +92,46 @@ app.get("/api/test-supabase", async (req, res) => {
     res.status(500).json({ status: "ERROR" });
   }
 });
+app.post("/api/validate-play-subscription", async (req, res) => {
+  try {
+    const { userId, productId, purchaseToken } = req.body;
 
+    if (!userId || !productId || !purchaseToken) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Missing required fields"
+      });
+    }
+
+    // 🔒 TEMPORARY: Mock validation (Play API not wired yet)
+    const tier = "pro";
+    const now = new Date();
+    const expiry = new Date();
+    expiry.setMonth(expiry.getMonth() + 1);
+
+    const { error } = await supabase
+      .from("users")
+      .update({
+        tier,
+        play_subscription_id: productId,
+        subscription_period_start: now,
+        subscription_period_end: expiry
+      })
+      .eq("id", userId);
+
+    if (error) throw error;
+
+    res.json({
+      status: "OK",
+      tier,
+      subscription_period_end: expiry
+    });
+
+  } catch (err) {
+    console.error("Subscription validation error:", err.message);
+    res.status(500).json({ status: "ERROR" });
+  }
+});
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Worth-It backend running on port ${PORT}`);
 });
