@@ -96,9 +96,15 @@ app.post("/api/validate-play-subscription", async (req, res) => {
       });
     }
 
-    const key = JSON.parse(
-  process.env.PLAY_SERVICE_ACCOUNT_JSON.replace(/\\n/g, '\n')
-);
+    const rawJson = process.env.PLAY_SERVICE_ACCOUNT_JSON;
+
+    if (!rawJson) {
+      return res.status(500).json({
+        status: "MISSING_SERVICE_ACCOUNT"
+      });
+    }
+
+    const key = JSON.parse(rawJson.replace(/\\n/g, '\n'));
 
     const auth = new google.auth.GoogleAuth({
       credentials: key,
