@@ -6,6 +6,7 @@ import cors from "cors";
 import { runValuation } from "./services/runValuation.js";
 import { getEbayAccessToken } from "./services/ebayAuth.js";
 import { supabase } from "./services/supabase.js";
+import { validatePlaySubscription } from "./services/playValidation.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -82,14 +83,50 @@ app.post("/api/listing-draft", async (req, res) => {
 });
 
 /* =========================
-   PLAY SUBSCRIPTION VALIDATION (TEMP DISABLED)
+   PLAY SUBSCRIPTION VALIDATION
 ========================= */
 app.post("/api/validate-play-subscription", async (req, res) => {
   try {
-    return res.json({
-      status: "TEMP_DISABLED"
+    const { userId, productId, purchaseToken } = req.body;
+
+    if (!userId || !productId || !purchaseToken) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Missing required fields"
+      });
+    }
+
+    const result = await validatePlaySubscription({
+      productId,
+      purchaseToken
     });
+
+    if (!result.valid) {
+      return res.status(400).json({ status: "INVALID" });
+    }
+
+    const now = new Date();
+
+    const { error } = await supabase
+      .from("users")
+      .update({
+        tier: "pro",
+        play_subscription_id: productId,
+        subscription_period_start: now,
+        subscription_period_end: result.expiry
+      })
+      .eq("id", userId);
+
+    if (error) throw error;
+
+    res.json({
+      status: "OK",
+      tier: "pro",
+      subscription_period_end: result.expiry
+    });
+
   } catch (err) {
+    console.error("Subscription endpoint error:", err.message);
     res.status(500).json({ status: "ERROR" });
   }
 });
