@@ -3,7 +3,6 @@ import 'dotenv/config';
 import express from "express";
 import cors from "cors";
 import { google } from "googleapis";
-import fs from "fs";
 
 import { runValuation } from "./services/runValuation.js";
 import { getEbayAccessToken } from "./services/ebayAuth.js";
@@ -97,9 +96,7 @@ app.post("/api/validate-play-subscription", async (req, res) => {
       });
     }
 
-    const key = JSON.parse(
-      fs.readFileSync("./service-account.json", "utf8")
-    );
+    const key = JSON.parse(process.env.PLAY_SERVICE_ACCOUNT_JSON);
 
     const auth = new google.auth.GoogleAuth({
       credentials: key,
