@@ -2,3 +2,4 @@ node_modules
 .env
 ARCHIVE_backend_snapshot_2025-12-16
 worthit-freeze-2025-12-10-backend
+service-account.json
