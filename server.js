@@ -2,7 +2,6 @@ import 'dotenv/config';
 
 import express from "express";
 import cors from "cors";
-import { google } from "googleapis";
 
 import { runValuation } from "./services/runValuation.js";
 import { getEbayAccessToken } from "./services/ebayAuth.js";
@@ -83,77 +82,14 @@ app.post("/api/listing-draft", async (req, res) => {
 });
 
 /* =========================
-   PLAY SUBSCRIPTION VALIDATION
+   PLAY SUBSCRIPTION VALIDATION (TEMP DISABLED)
 ========================= */
 app.post("/api/validate-play-subscription", async (req, res) => {
   try {
-    const { userId, productId, purchaseToken } = req.body;
-
-    if (!userId || !productId || !purchaseToken) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: "Missing required fields"
-      });
-    }
-
-    const rawJson = process.env.PLAY_SERVICE_ACCOUNT_JSON;
-
-    if (!rawJson) {
-      return res.status(500).json({
-        status: "MISSING_SERVICE_ACCOUNT"
-      });
-    }
-
-    const key = JSON.parse(rawJson.replace(/\\n/g, '\n'));
-
-    const auth = new google.auth.GoogleAuth({
-      credentials: key,
-      scopes: ["https://www.googleapis.com/auth/androidpublisher"]
+    return res.json({
+      status: "TEMP_DISABLED"
     });
-
-    const androidpublisher = google.androidpublisher({
-      version: "v3",
-      auth
-    });
-
-    const packageName = "com.ideaforged.worthit";
-
-    const response =
-      await androidpublisher.purchases.subscriptions.get({
-        packageName,
-        subscriptionId: productId,
-        token: purchaseToken
-      });
-
-    const purchaseData = response.data;
-
-    if (!purchaseData || !purchaseData.expiryTimeMillis) {
-      return res.status(400).json({ status: "INVALID" });
-    }
-
-    const expiry = new Date(Number(purchaseData.expiryTimeMillis));
-    const now = new Date();
-
-    const { error } = await supabase
-      .from("users")
-      .update({
-        tier: "pro",
-        play_subscription_id: productId,
-        subscription_period_start: now,
-        subscription_period_end: expiry
-      })
-      .eq("id", userId);
-
-    if (error) throw error;
-
-    res.json({
-      status: "OK",
-      tier: "pro",
-      subscription_period_end: expiry
-    });
-
   } catch (err) {
-    console.error("Subscription validation error:", err.message);
     res.status(500).json({ status: "ERROR" });
   }
 });
