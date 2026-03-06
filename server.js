@@ -139,7 +139,7 @@ app.get("/api/daily-win", async (req, res) => {
 
     const dailyWin = {
       title: "Vintage Pyrex Bowl",
-      imageUrl: "https://its-worthit.com/wins/pyrex.jpg",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Pyrex_bowls.jpg",
       foundPrice: 3,
       valueLow: 80,
       valueHigh: 120,
