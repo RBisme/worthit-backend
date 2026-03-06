@@ -134,10 +134,10 @@ app.post("/api/validate-play-subscription", async (req, res) => {
 /* =========================
    DAILY WIN ENDPOINT
 ========================= */
-app.get("/api/daily-win", async (req, res) => {
-  try {
+app.get("/api/daily-win", (req, res) => {
 
-    const dailyWin = {
+  const wins = [
+    {
       title: "Vintage Pyrex Bowl",
       imageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Pyrex_bowls.jpg",
       foundPrice: 3,
@@ -145,7 +145,32 @@ app.get("/api/daily-win", async (req, res) => {
       valueHigh: 120,
       soldPrice: 97,
       quote: "Almost donated it!"
-    };
+    },
+    {
+      title: "Milwaukee Impact Driver",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Milwaukee_impact_driver.jpg",
+      foundPrice: 20,
+      valueLow: 120,
+      valueHigh: 180,
+      soldPrice: 150,
+      quote: "Found it at a garage sale!"
+    },
+    {
+      title: "Vintage Baseball Glove",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Baseball_glove.jpg",
+      foundPrice: 5,
+      valueLow: 60,
+      valueHigh: 110,
+      soldPrice: 85,
+      quote: "Almost threw it away!"
+    }
+  ];
+
+  const randomWin = wins[Math.floor(Math.random() * wins.length)];
+
+  res.json(randomWin);
+
+});
 
     res.json(dailyWin);
 
