@@ -131,6 +131,29 @@ app.post("/api/validate-play-subscription", async (req, res) => {
   }
 });
 
+/* =========================
+   DAILY WIN ENDPOINT
+========================= */
+app.get("/api/daily-win", async (req, res) => {
+  try {
+
+    const dailyWin = {
+      title: "Vintage Pyrex Bowl",
+      imageUrl: "https://its-worthit.com/wins/pyrex.jpg",
+      foundPrice: 3,
+      valueLow: 80,
+      valueHigh: 120,
+      soldPrice: 97,
+      quote: "Almost donated it!"
+    };
+
+    res.json(dailyWin);
+
+  } catch (err) {
+    console.error("Daily win error:", err.message);
+    res.status(500).json({ status: "ERROR" });
+  }
+});
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Worth-It backend running on port ${PORT}`);
 });
