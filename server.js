@@ -179,6 +179,44 @@ app.get("/api/daily-win", (req, res) => {
     res.status(500).json({ status: "ERROR" });
   }
 });
+/* =========================
+   DAILY WIN ENDPOINT
+========================= */
+
+const wins = [
+{
+title: "Vintage Pyrex Bowl",
+imageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Pyrex_bowls.jpg",
+foundPrice: 3,
+valueLow: 80,
+valueHigh: 120,
+soldPrice: 97,
+quote: "Almost donated it!"
+},
+{
+title: "Milwaukee Impact Driver",
+imageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Milwaukee_impact_driver.jpg",
+foundPrice: 5,
+valueLow: 70,
+valueHigh: 110,
+soldPrice: 89,
+quote: "Found in a $5 tool bin!"
+},
+{
+title: "Vintage Baseball Glove",
+imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Baseball_glove.jpg",
+foundPrice: 2,
+valueLow: 60,
+valueHigh: 95,
+soldPrice: 78,
+quote: "Garage sale miracle."
+}
+];
+
+app.get("/api/daily-win", (req, res) => {
+const randomWin = wins[Math.floor(Math.random() * wins.length)];
+res.json(randomWin);
+});
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Worth-It backend running on port ${PORT}`);
 });
