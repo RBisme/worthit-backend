@@ -54,7 +54,7 @@ app.post("/api/valuation", async (req, res) => {
 ========================= */
 app.post("/api/listing-draft", async (req, res) => {
   try {
-    const { title, value, description } = req.body;
+    const { title, value } = req.body;
 
     if (!title) {
       return res.status(400).json({
