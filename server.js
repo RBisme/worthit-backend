@@ -54,7 +54,7 @@ app.post("/api/valuation", async (req, res) => {
 ========================= */
 app.post("/api/listing-draft", async (req, res) => {
   try {
-    const { title, value } = req.body;
+    const { title, value, description } = req.body;
 
     if (!title) {
       return res.status(400).json({
@@ -69,13 +69,7 @@ app.post("/api/listing-draft", async (req, res) => {
 
     const price = Math.round(Number(value) || 0);
 
-    const description = `Pre-owned ${formattedTitle} in good working condition.
-
-Shows normal signs of use consistent with secondhand items. Please review photos for exact cosmetic condition.
-
-Great item for resale, collection, or everyday use.
-
-Feel free to message with any questions.`;
+const description = `Pre-owned ${formattedTitle} in good working condition.
 
     const draft = {
       status: "OK",
