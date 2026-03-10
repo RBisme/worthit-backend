@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { runValuation } from "./services/runValuation.js";
 import { getEbayAccessToken } from "./services/ebayAuth.js";
+import { identifyItem } from "./services/identifyItem.js";
 
 const app = express();
 
@@ -20,16 +21,20 @@ app.get("/", (req, res) => {
 
 app.post("/api/valuation", async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, imageBase64 } = req.body;
 
     if (!title && !description) {
       return res.status(400).json({ status: "ERROR" });
     }
 
+    // Run identifier (currently placeholder)
+    const identified = await identifyItem(title, imageBase64);
+    const cleanTitle = identified.itemName || title;
+
     const ebayToken = await getEbayAccessToken();
 
     const result = await runValuation({
-      title,
+      title: cleanTitle,
       description,
       ebayToken
     });
@@ -41,6 +46,7 @@ app.post("/api/valuation", async (req, res) => {
     res.status(500).json({ status: "ERROR" });
   }
 });
+
 /* =========================
    LISTING DRAFT ENDPOINT
 ========================= */
@@ -82,6 +88,7 @@ Estimated resale value based on recent sold comps.`;
     res.status(500).json({ status: "ERROR" });
   }
 });
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Worth-It backend running on port ${PORT}`);
 });
