@@ -8,27 +8,31 @@ export async function identifyItem(title, imageBase64) {
 
   try {
 
-    const prompt = `
-Identify the real item from this marketplace title.
-
-Return JSON only with:
-itemName
-category
-keywords
-`;
+    const messages = [
+      {
+        role: "system",
+        content: "Identify the resale item shown in the image and return JSON with itemName, category, keywords."
+      },
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: `Title from user: ${title}`
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: `data:image/jpeg;base64,${imageBase64}`
+            }
+          }
+        ]
+      }
+    ];
 
     const response = await client.chat.completions.create({
       model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: "You identify resale items from marketplace titles."
-        },
-        {
-          role: "user",
-          content: `${prompt}\n\nTitle: ${title}`
-        }
-      ],
+      messages,
       temperature: 0
     });
 
