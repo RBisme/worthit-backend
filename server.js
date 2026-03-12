@@ -23,7 +23,7 @@ app.post("/api/valuation", async (req, res) => {
   try {
     const { title, description, imageBase64 } = req.body;
 
-    if (!title && !description) {
+    if (!title && !description && !imageBase64) {
       return res.status(400).json({ status: "ERROR" });
     }
 
