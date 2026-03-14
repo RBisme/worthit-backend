@@ -19,6 +19,15 @@ export async function runValuation({ title, description, ebayToken }) {
     .map(item => parseFloat(item.price))
     .filter(price => !isNaN(price));
 
+// Remove extreme outliers (top and bottom 10%)
+prices.sort((a, b) => a - b);
+
+const trimCount = Math.floor(prices.length * 0.1);
+const trimmedPrices =
+  prices.length > 10
+    ? prices.slice(trimCount, prices.length - trimCount)
+    : prices;
+
   if (prices.length === 0) {
     return {
       status: 'OK',
