@@ -40,15 +40,33 @@ export async function runValuation({ title, description, ebayToken }) {
       : (prices[mid - 1] + prices[mid]) / 2;
 
   const soldCount = prices.length;
-  // Trimmed range using 25th–75th percentile
-  // Tight core band (40%–60%)
-  const lowerIndex = Math.floor(prices.length * 0.4);
-  const upperIndex = Math.floor(prices.length * 0.6);
 
-  const lowRange = Math.round(prices[lowerIndex]);
-  const highRange = Math.round(prices[upperIndex]);
+  /* =========================
+     OUTLIER FILTER (NEW)
+     Prevents extreme prices
+  ========================= */
 
-  // Recency (14 days)
+  const filtered = prices.filter(
+    p => p > median * 0.5 && p < median * 2
+  );
+
+  const finalPrices =
+    filtered.length >= 3 ? filtered : prices;
+
+  /* =========================
+     RANGE CALCULATION
+  ========================= */
+
+  const lowerIndex = Math.floor(finalPrices.length * 0.25);
+  const upperIndex = Math.floor(finalPrices.length * 0.75);
+
+  const lowRange = Math.round(finalPrices[lowerIndex]);
+  const highRange = Math.round(finalPrices[upperIndex]);
+
+  /* =========================
+     RECENCY (14 DAYS)
+  ========================= */
+
   const now = Date.now();
   const FOURTEEN_DAYS = 14 * 24 * 60 * 60 * 1000;
 
@@ -58,7 +76,10 @@ export async function runValuation({ title, description, ebayToken }) {
     return !isNaN(soldTime) && now - soldTime <= FOURTEEN_DAYS;
   }).length;
 
-  // Confidence scale (0–3)
+  /* =========================
+     CONFIDENCE
+  ========================= */
+
   let confidenceLevel = 0;
 
   if (soldCount >= 5) confidenceLevel = 1;
